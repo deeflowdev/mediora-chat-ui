@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mediora AI | Midnight</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root {
+            /* 🌑 Deep Midnight Palette */
+            --bg-main: #0b0e14;       /* Deepest blue-slate */
+            --bg-sidebar: #13171f;    /* Slightly lighter slate */
+            --bg-bubble-user: #1e2530; /* Muted slate blue */
+            --accent: #3b82f6;        /* Professional blue */
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            
+            /* 🖊️ Typography */
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #262d3d;
+            
+            --sidebar-width: 260px;
+            --transition: all 0.25s ease;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg-main); color: var(--text-primary); display: flex; height: 100vh; }
+
+        /* --- Sidebar --- */
+        #sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        .sidebar-header { padding: 1.2rem; }
+        .new-chat-btn {
+            width: 100%;
+            padding: 0.7rem;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        .new-chat-btn:hover { background: #1e2530; border-color: var(--accent); }
+
+        .chat-list { flex: 1; overflow-y: auto; padding: 0.8rem; }
+        .chat-item {
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            transition: 0.2s;
+            margin-bottom: 4px;
+        }
+        .chat-item:hover { background: #1e2530; color: var(--text-primary); }
+        .chat-item.active { background: #1e2530; color: var(--accent); border-left: 2px solid var(--accent); }
+
+        /* --- Main Chat --- */
+        #main-content { flex: 1; display: flex; flex-direction: column; }
+        
+        header {
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(11, 14, 20, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        .brand { font-weight: 700; font-size: 1.2rem; letter-spacing: -0.5px; }
+        .brand span { color: var(--accent); }
+
+        #chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* --- Bubbles --- */
+        .message { max-width: 80%; line-height: 1.6; }
+        .message.user { align-self: flex-end; }
+        .message.bot { align-self: flex-start; }
+
+        .bubble {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .user .bubble { background: var(--bg-bubble-user); color: #fff; border-bottom-right-radius: 2px; }
+        .bot .bubble { background: var(--bg-sidebar); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
+
+        .meta { font-size: 0.7rem; color: var(--text-secondary); margin-top: 6px; display: flex; gap: 10px; }
+
+        /* --- Input --- */
+        .input-area { padding: 1.5rem 2rem 2.5rem; }
+        .input-box {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            transition: border-color 0.2s;
+        }
+        .input-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+        textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            padding: 8px 0;
+            font-size: 1rem;
+            resize: none;
+            max-height: 180px;
+        }
+
+        .icon-btn {
+            background: none; border: none; cursor: pointer; color: var(--text-secondary);
+            font-size: 1.4rem; padding: 6px; border-radius: 6px; transition: 0.2s;
+        }
+        .icon-btn:hover { color: var(--accent); background: #1e2530; }
+        .send-btn { color: var(--accent); }
+        .send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <button class="new-chat-btn" onclick="app.newChat()">
+                <i class="ph ph-plus"></i> New Chat
+            </button>
+        </div>
+        <div class="chat-list" id="chat-list"></div>
+    </aside>
+
+    <main id="main-content">
+        <header>
+            <div class="brand">Mediora<span>.ai</span></div>
+            <i class="ph ph-user-circle" style="font-size: 1.5rem; color: var(--text-secondary)"></i>
+        </header>
+
+        <div id="chat-container"></div>
+
+        <div class="input-area">
+            <div class="input-box">
+                <button class="icon-btn"><i class="ph ph-paperclip"></i></button>
+                <textarea id="user-input" placeholder="Message Mediora..." rows="1"></textarea>
+                <button class="icon-btn send-btn" onclick="app.send()"><i class="ph-fill ph-paper-plane-right"></i></button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const app = {
+            chats: JSON.parse(localStorage.getItem('mediora_slate')) || [],
+            currId: null,
+
+            init() {
+                if (this.chats.length === 0) this.newChat();
+                else this.loadChat(this.chats[0].id);
+                
+                document.getElementById('user-input').oninput = function() {
+                    this.style.height = 'auto';
+                    this.style.height = this.scrollHeight + 'px';
+                };
+            },
+
+            newChat() {
+                const id = Date.now();
+                this.chats.unshift({ id, title: "New Session", msgs: [] });
+                this.loadChat(id);
+            },
+
+            loadChat(id) {
+                this.currId = id;
+                this.render();
+            },
+
+            send() {
+                const input = document.getElementById('user-input');
+                if (!input.value.trim()) return;
+
+                const chat = this.chats.find(c => c.id === this.currId);
+                if (chat.msgs.length === 0) chat.title = input.value.slice(0, 20) + "...";
+
+                chat.msgs.push({ role: 'user', text: input.value });
+                input.value = '';
+                input.style.height = 'auto';
+
+                // Bot Response
+                setTimeout(() => {
+                    chat.msgs.push({ role: 'bot', text: "Analyzing your request within the slate framework. How else can I help?" });
+                    this.render();
+                    localStorage.setItem('mediora_slate', JSON.stringify(this.chats));
+                }, 600);
+                
+                this.render();
+            },
+
+            render() {
+                const list = document.getElementById('chat-list');
+                list.innerHTML = this.chats.map(c => `
+                    <div class="chat-item ${c.id === this.currId ? 'active' : ''}" onclick="app.loadChat(${c.id})">
+                        <i class="ph ph-chat-teardrop"></i> ${c.title}
+                    </div>
+                `).join('');
+
+                const chat = this.chats.find(c => c.id === this.currId);
+                const container = document.getElementById('chat-container');
+                container.innerHTML = chat.msgs.map(m => `
+                    <div class="message ${m.role}">
+                        <div class="bubble">${m.text}</div>
+                        <div class="meta"><span>Just now</span></div>
+                    </div>
+                `).join('');
+                container.scrollTop = container.scrollHeight;
+            }
+        };
+        app.init();
+    </script>
+</body>
+</html>
