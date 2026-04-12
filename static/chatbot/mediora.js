@@ -7,7 +7,7 @@ const app = {
 
   init() {
     if (localStorage.getItem("isLoggedIn") !== "true") {
-      window.location.href = "../auth/login.html";
+      window.location.href = "../templates/login.html";
       return;
     }
 
@@ -199,7 +199,7 @@ const app = {
   confirmLogout() {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("user_creds"); 
-    window.location.href = "../auth/login.html";
+    window.location.href = "../templates/login.html";
   },
 
   openDeleteModal(e, id) {

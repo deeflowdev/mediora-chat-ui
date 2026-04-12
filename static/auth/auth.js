@@ -115,7 +115,7 @@ const auth = {
     if (this.authCard) this.authCard.style.display = "none";
     if (this.successScreen) this.successScreen.style.display = "block";
     setTimeout(() => {
-      window.location.href = "../chatbot/mediora.html";
+      window.location.href = "../templates/mediora.html";
     }, 1500);
   },
 };
