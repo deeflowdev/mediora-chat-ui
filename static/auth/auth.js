@@ -115,7 +115,7 @@ const auth = {
     if (this.authCard) this.authCard.style.display = "none";
     if (this.successScreen) this.successScreen.style.display = "block";
     setTimeout(() => {
-      window.location.href = "../templates/mediora.html";
+      window.location.href = "/";
     }, 1500);
   },
 };
