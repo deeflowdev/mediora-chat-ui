@@ -1,0 +1,27 @@
+/* home page */
+#home-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 10vh;
+  text-align: center;
+}
+
+.home-content h1 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+
+  background: linear-gradient(to right, #fff, var(--text-muted));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.home-content p {
+  color: var(--text-muted);
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.5;
+}

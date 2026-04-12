@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg-main: #000;
+  --bg-sidebar: #000;
+  --bg-input: #111;
+
+  --text-main: #fff;
+  --text-muted: #8e8e8e;
+
+  --accent: #3a8bff;
+  --danger: #ff4d4d;
+
+  --user-bubble: #1a1a1a;
+  --border: rgba(255, 255, 255, 0.1);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  --sidebar-width: 260px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-main);
+  color: var(--text-main);
+}
