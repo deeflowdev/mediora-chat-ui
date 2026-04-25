@@ -158,7 +158,7 @@
 }
 
 .attachment-wrapper.is-img {
-    width: 350px; /* Big size for clinical images */
+    width: 350px; 
     height: 250px;
     border-radius: 16px;
     overflow: hidden;
@@ -166,8 +166,8 @@
 }
 
 .attachment-wrapper.is-doc {
-  width: 220px; /* Smaller width */
-  height: 48px;  /* Compact height */
+  width: 220px;
+  height: 48px; 
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -177,7 +177,7 @@
 
 
 .attachment-wrapper.sent-mode:hover {
-  transform: none; /* Keeps it steady */
+  transform: none; 
 }
 
 .message.user .attachment-grid {

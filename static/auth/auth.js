@@ -81,23 +81,20 @@ const auth = {
       return;
     }
 
-    // --- AUTO-LOGIN LOGIC ---
-
-    // 1. Store user in database
+    // store user 
     const newUser = { user, email, pass };
     users.push(newUser);
     localStorage.setItem("all_med_users", JSON.stringify(users));
 
-    // 2. Immediately set session credentials so the app thinks you're logged in
     localStorage.setItem("isLoggedIn", "true");
     localStorage.setItem("user_creds", JSON.stringify(newUser));
 
-    // 3. Trigger the redirect immediately
+    // trigger the redirect immediately
     msg.style.color = "#4ade80";
     msg.innerText = "Account created! Entering Mediora...";
 
     setTimeout(() => {
-      this.redirect(); // This sends them to the "/" route immediately
+      this.redirect(); 
     }, 1000);
   },
 

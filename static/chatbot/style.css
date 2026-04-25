@@ -248,12 +248,12 @@
   object-fit: cover;
 
   border-radius: var(--radius-sm);
-  /* border: 1px solid var(--border); */
+
 }
 
 @media (max-width: 600px) {
   .attachment-wrapper.sent-mode {
-      width: 100%; /* Spans full width of chat on phones */
+      width: 100%; 
       height: 200px;
   }
 }
@@ -271,7 +271,7 @@
 
   background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
   color: var(--text-muted);
-  /* border: 1px solid var(--border); */
+  
   border-radius: var(--radius-sm);
 
   width: 100%;
@@ -288,7 +288,7 @@
 
 .att-doc-compact i {
   font-size: 1.4rem;
-  color: #ff4d4d; /* Red for PDF feel */
+  color: #ff4d4d; 
 }
 
 .att-doc-compact span {
@@ -296,7 +296,7 @@
   color: #eee;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* Keeps long names from breaking the box */
+  text-overflow: ellipsis; 
 }
 
 .message.user .message-content { align-items: flex-end; }
@@ -313,7 +313,7 @@
   color: var(--text-muted);
   word-break: break-all;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Limit filename to 2 lines */
+  -webkit-line-clamp: 2; 
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -325,7 +325,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.6); /* Dark translucent circle */
+  background: rgba(0, 0, 0, 0.6); 
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
@@ -333,12 +333,12 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  opacity: 0; /* Hidden by default */
+  opacity: 0; 
   transition: all 0.2s ease;
 }
 
 .attachment-wrapper:hover .remove-att-btn {
-  opacity: 1; /* Shows up on hover */
+  opacity: 1; 
 }
 
 .remove-att-btn:hover {

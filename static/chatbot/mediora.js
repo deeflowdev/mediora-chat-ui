@@ -395,7 +395,6 @@ const app = {
       .classList.toggle("active", hasText || hasFiles);
   },
 
-  // Add this inside the app object
   toggleSidebar() {
     const sidebar = document.getElementById("sidebar");
     sidebar.classList.toggle("active");
