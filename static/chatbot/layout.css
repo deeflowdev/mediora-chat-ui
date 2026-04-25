@@ -2,10 +2,12 @@
 
 #sidebar {
   width: var(--sidebar-width);
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--bg-sidebar);
+  background: #000;
   border-right: 1px solid var(--border);
+  box-shadow: inset -10px 0 30px rgba(0, 0, 0, 0.5);
 }
 
 #main-content {
@@ -21,6 +23,11 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+.chat-list {
+  flex: 1; 
+  overflow-y: auto;
 }
 
 /* main page hides in chat mode*/

@@ -10,18 +10,21 @@
 }
 
 .home-content h1 {
-  font-size: 2.5rem;
-  font-weight: 600;
-  margin-bottom: 16px;
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  margin-bottom: 12px;
+  background: linear-gradient(to bottom right, #fff 30%, var(--accent) 100%);
 
-  background: linear-gradient(to right, #fff, var(--text-muted));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.2));
 }
 
 .home-content p {
   color: var(--text-muted);
-  max-width: 400px;
+  max-width: 480px;
   margin: 0 auto;
+  font-size: 1.1rem;
+  font-weight: 400;
   line-height: 1.5;
 }

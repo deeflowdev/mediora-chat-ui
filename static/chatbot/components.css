@@ -16,13 +16,18 @@
   pointer-events: none;
 }
 
+#user-input:focus {
+  border-color: var(--accent);
+}
+
 .input-box {
   max-width: 840px;
   margin: 0 auto;
 
   padding: 12px;
 
-  background: var(--bg-input);
+  background: rgba(15, 15, 15, 0.8) !important;
+  backdrop-filter: blur(10px);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
 }
@@ -89,7 +94,15 @@ textarea {
 
   color: white;
   font-size: 1rem;
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  padding: 4px 0;
   max-height: 150px;
+}
+
+textarea::placeholder {
+  color: var(--text-dark);
+  font-weight: 400;
 }
 
 .action-btn {
@@ -125,6 +138,9 @@ textarea {
 .send-btn.active {
   opacity: 1;
   pointer-events: all;
+  background: var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+  color: white;
 }
 
 
@@ -138,9 +154,12 @@ textarea {
 }
 
 .chip {
-  padding: 6px 14px;
+  padding: 8px 16px;
 
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
   color: var(--text-muted);
 
   background: rgba(255, 255, 255, 0.05);
@@ -154,7 +173,7 @@ textarea {
 .chip:hover {
   color: white;
   border-color: white;
-  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent)
 }
 
 /* scrollbar */

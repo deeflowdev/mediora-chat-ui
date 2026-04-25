@@ -6,17 +6,16 @@
 <title>Mediora AI | Clinical Interface</title>
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <link rel="stylesheet" href="../static/chatbot/base.css">
-<link rel="stylesheet" href="../static/chatbot/layout.css">
-<link rel="stylesheet" href="../static/chatbot/messages.css">
-<link rel="stylesheet" href="../static/chatbot/pages.css">
-<link rel="stylesheet" href="../static/chatbot/components.css">
-<link rel="stylesheet" href="../static/chatbot/style.css">
-
 <link rel="shortcut icon" href="../static/assets/favicon_new.png" type="image/x-icon">
+
 </head>
 <body>
 
 <aside id="sidebar">
+    <div class="sidebar-close-btn" onclick="app.toggleSidebar()">
+        <i class="ph ph-x"></i>
+    </div>
+
     <div class="sidebar-header">
         <button class="new-chat-btn" onclick="app.showHome()">
         <i class="ph ph-plus"></i>
@@ -26,15 +25,20 @@
     <div class="chat-list" id="chat-list"></div>
     
     <div class="user-section">
-        <div class="user-info">
-        <div class="user-avatar"><i class="ph-fill ph-user"></i></div>
-        <div class="user-details">
-            <span id="user-display-name">Guest User</span>
+        <div class="user-card">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="ph-fill ph-user"></i>
+                </div>
+                <div class="user-details">
+                    <span id="user-display-name">Guest User</span>
+                    <span class="user-status">Online</span>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="app.openLogoutModal()" title="Logout">
+                <i class="ph ph-power"></i>
+            </button>
         </div>
-        </div>
-        <button class="logout-btn" onclick="app.openLogoutModal()" title="Logout">
-        <i class="ph ph-sign-out"></i>
-        </button>
     </div>
     </aside>
     
@@ -61,10 +65,18 @@
     </div>
     
     <main id="main-content">
-    <header>
-        <div style="font-weight: 500; letter-spacing: 0.5px; cursor:pointer" onclick="app.showHome()">MEDIORIA <span style="color: var(--accent)">AI</span></div>
-        <i class="ph ph-activity" style="font-size: 1.5rem; color: var(--text-muted)"></i>
-    </header>
+        <header>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="ph ph-list mobile-menu-btn" 
+                style="font-size: 1.5rem; cursor: pointer; display: none;" 
+                onclick="app.toggleSidebar()"></i>
+                
+                <div style="font-weight: 500; letter-spacing: 0.5px; cursor:pointer" onclick="app.showHome()">
+                    MEDIORIA <span style="color: var(--accent)">AI</span>
+                </div>
+            </div>
+            <i class="ph ph-activity" style="font-size: 1.5rem; color: var(--text-muted)"></i>
+        </header>
     
     <div id="chat-container">
         <div id="home-screen">
@@ -80,7 +92,7 @@
         <div class="input-box">
         <div id="preview-strip"></div>
         <div class="input-row">
-            <input type="file" id="file-trigger" hidden multiple onchange="app.handleFiles(this.files)">
+            <input type="file" id="file-trigger" hidden multiple onchange="app.handleFiles(this.files)" autofocus>
             <button class="action-btn" onclick="document.getElementById('file-trigger').click()"><i class="ph ph-paperclip"></i></button>
             <textarea id="user-input" placeholder="Message Mediora..." rows="1"></textarea>
             <button id="send-btn" class="action-btn send-btn" onclick="app.send()"><i class="ph-fill ph-paper-plane-right"></i></button>

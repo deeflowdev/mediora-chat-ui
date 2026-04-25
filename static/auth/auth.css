@@ -2,16 +2,17 @@
 
 :root {
   --bg-main: #000000;
-  --bg-card: #0A0A0A;
+  --bg-card: #050505;   
   --bg-input: #111111;
 
   --text-main: #FFFFFF;
   --text-muted: #8E8E8E;
 
-  --accent: #3A8BFF;
-  --error: #ff4d4d;
+  --accent: #a855f7;    
+  --accent-glow: rgba(168, 85, 247, 0.15);
+  --danger: #ff4d4d;
 
-  --border: rgba(255, 255, 255, 0.1);
+  --border: rgba(255, 255, 255, 0.08);
 }
 
 * {
@@ -30,13 +31,15 @@ body {
   background-color: var(--bg-main);
   color: var(--text-main);
 
-  overflow: hidden;
+  overflow: hidden; 
+  margin: 0;
 }
 
 .auth-container {
-  width: 100%;
+  width: 95%;
   max-width: 400px;
-  padding: 2.5rem;
+  padding: clamp(1.5rem, 4vh, 2.5rem);
+  height: fit-content;
 
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -44,11 +47,15 @@ body {
 
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+  max-height: 95vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .brand {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: clamp(1rem, 3vh, 2rem);
 }
 
 .brand-name {
@@ -70,13 +77,13 @@ body {
 form {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: clamp(0.5rem, 1.5vh, 1rem);
 }
 
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 label {
@@ -87,7 +94,7 @@ label {
 }
 
 input {
-  padding: 14px 18px;
+  padding: clamp(10px, 1.5vh, 14px) 18px;
   border-radius: 14px;
 
   background: var(--bg-input);
@@ -101,19 +108,20 @@ input {
 }
 
 input:focus {
-  background: #161616;
+  background: #141414;
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(58, 139, 255, 0.1);
+  box-shadow: 0 0 0 4px var(--accent-glow);
 }
 
 .btn-submit {
   margin-top: 8px;
-  padding: 16px;
+  padding: clamp(12px, 2vh, 16px);
 
   border: none;
   border-radius: 14px;
 
   background: var(--accent);
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.2);
   color: #fff;
 
   font-size: 1rem;
@@ -126,6 +134,7 @@ input:focus {
 .btn-submit:hover {
   opacity: 0.95;
   transform: translateY(-1px);
+  background: #b670f9;
 }
 
 .btn-submit:active {
@@ -133,7 +142,7 @@ input:focus {
 }
 
 .toggle-text {
-  margin-top: 2rem;
+  margin-top: clamp(1rem, 3vh, 2rem);
   text-align: center;
   font-size: 0.9rem;
   color: var(--text-muted);
@@ -155,7 +164,7 @@ input:focus {
   min-height: 1.2rem;
   text-align: center;
   font-size: 0.8rem;
-  color: var(--error);
+  color: var(--danger);
 }
 
 .hidden {
@@ -173,7 +182,7 @@ input:focus {
   margin: 20px auto;
 
   border-radius: 50%;
-  border: 3px solid rgba(255,255,255,0.1);
+  border: 3px solid rgba(255, 255, 255, 0.05);
   border-top: 3px solid var(--accent);
 
   animation: spin 1s linear infinite;
@@ -196,5 +205,83 @@ input:focus {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* --- RESPONSIVE AUTH STYLES --- */
+
+@media (max-width: 480px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+    padding: 20px; 
+    align-items: center; /* Better for tall screens, still scrolls on short ones */
+    overflow-y: auto;
+    display: flex; /* Ensure flex is active to use align-items */
+    justify-content: center;
+  }
+
+  .auth-container {
+    width: 92%; 
+    max-width: 360px;
+    padding: 1.5rem; 
+    margin: auto; /* Works with flex to keep it perfectly centered */
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    
+    /* Optimization: ensures the card doesn't jitter during the slideUp animation */
+    backface-visibility: hidden; 
+  }
+
+  .brand {
+    margin-bottom: 1.5rem;
+  }
+
+  .brand-name {
+    font-size: 1.3rem; /* Slightly smaller for better balance */
+  }
+
+  input {
+    padding: 12px 14px;
+    font-size: 16px; /* Best for mobile accessibility */
+  }
+
+  .btn-submit {
+    padding: 14px;
+  }
+
+  .toggle-text {
+    margin-top: 1.5rem;
+  }
+
+  form {
+    gap: 0.8rem; /* Reduced from 1.2rem to fit all register fields */
+  }
+
+  .input-group {
+    gap: 4px;
+  }
+
+  input {
+    padding: 10px 14px; /* Slightly slimmer to save vertical space */
+  }
+
+  /* Make sure the success screen centers perfectly on mobile */
+  #success-screen {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+  }
+}
+
+/* Landscape Mode Fix for small phones */
+@media (max-height: 500px) {
+  body {
+    height: auto;
+    padding: 20px 0;
+  }
+  .auth-container {
+    margin-top: 0;
   }
 }

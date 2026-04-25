@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
+@import url("./components.css");
+@import url("./style.css");
+@import url("./messages.css");
+@import url("./pages.css");
+@import url("./layout.css");
+
+/* theme + design tokens */
 :root {
   --bg-main: #000;
   --bg-sidebar: #000;
@@ -8,7 +15,7 @@
   --text-main: #fff;
   --text-muted: #8e8e8e;
 
-  --accent: #3a8bff;
+  --accent: #a855f7;
   --danger: #ff4d4d;
 
   --user-bubble: #1a1a1a;
@@ -19,8 +26,16 @@
   --radius-lg: 20px;
 
   --sidebar-width: 260px;
+
+  /* Font Scale */
+  --fs-xs: 0.75rem;   
+  --fs-sm: 0.875rem;  
+  --fs-base: 1rem;    
+  --fs-lg: 1.25rem;   
+  --fs-xl: 2rem;      
 }
 
+/* reset */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -28,10 +43,160 @@
   font-family: "Inter", sans-serif;
 }
 
+/* global layout */
 body {
   display: flex;
   height: 100vh;
   overflow: hidden;
   background: var(--bg-main);
   color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
 }
+
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+}
+
+/* scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+  user-select: none;
+}
+
+.user-avatar .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1;
+}
+
+/* RESPONSIVE DESIGN */
+
+/* Hide mobile elements by default on Desktop */
+.mobile-menu-btn, .sidebar-close-btn {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    :root {
+        --sidebar-width: 280px;
+    }
+
+    /* Show burger & close buttons */
+    .mobile-menu-btn {
+        display: block !important;
+        font-size: 1.5rem;
+        cursor: pointer;
+        z-index: 3000 !important;
+    }
+
+    .sidebar-close-btn {
+        display: flex !important;
+        justify-content: flex-end;
+        padding: 1rem 1rem 0;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-muted);
+    }
+
+    /* 1. Sidebar Drawer */
+    #sidebar {
+        position: fixed;
+        left: -100%; 
+        top: 0;
+        bottom: 0;
+        z-index: 4000; /* Higher than header */
+        transition: 0.3s ease-in-out;
+        background: #000;
+        width: var(--sidebar-width);
+    }
+
+    #sidebar.active {
+        left: 0; 
+        box-shadow: 10px 0 30px rgba(0,0,0,0.9);
+    }
+
+    /* 2. Header & Main Content */
+    header {
+        padding: 1rem;
+        position: sticky;
+        top: 0;
+        background: var(--bg-main);
+        z-index: 100;
+    }
+
+    .input-wrapper { padding: 1rem; }
+    #messages-wrapper { padding: 1rem; max-width: 100%; }
+
+    /* 3. Message Bubbles & Attachments */
+    .message { max-width: 95%; }
+    
+    .attachment-wrapper.is-img, 
+    .attachment-wrapper.sent-mode {
+        width: 100%; 
+        height: auto;
+        aspect-ratio: 4/3;
+    }
+
+    /* 4. Vertical Chips for Mobile */
+    .chip-row {
+        display: flex;
+        flex-direction: column; /* Stacks chips vertically */
+        gap: 8px;               /* Space between stacked chips */
+        width: 100%;            /* Full width of the container */
+        max-width: 100%;
+        margin-top: 12px;
+        overflow: visible;      /* No scrolling needed now */
+    }
+    
+    /* Hide scrollbar for Chrome/Safari */
+    .chip-row::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .chip {
+      width: 100%;            /* Each chip takes full width */
+      text-align: center;      /* Centers the text */
+      white-space: normal;     /* Allows text to wrap if it's very long */
+      font-size: var(--fs-xs);
+      padding: 12px;           /* Slightly larger touch target for fingers */
+      border-radius: var(--radius-md); /* Matches your design style */
+      box-sizing: border-box;
+  }
+
+    /* 5. Home Screen text */
+    .home-content h1 { font-size: 1.6rem; padding: 0 1rem; }
+
+    /* Inside @media (max-width: 768px) */
+
+#preview-strip {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto; /* Allows swiping through selected files before sending */
+    padding: 10px 0;
+    scrollbar-width: none;
+}
+
+.pre-item {
+    width: 70px;  /* Slightly larger for mobile visibility */
+    height: 70px;
+    flex-shrink: 0;
+}
+
+.pre-del {
+    width: 24px;  /* Bigger 'X' button so it's easier to tap with a thumb */
+    height: 24px;
+    font-size: 14px;
+    top: -10px;
+    right: -10px;
+}
+}
+

@@ -2,19 +2,25 @@ import os
 import re
 import io
 import base64
+import logging
+import traceback
 
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 from google import genai
+from google.genai.errors import ClientError
 
 from PIL import Image
 from PyPDF2 import PdfReader
 
+# ------------------ setup ------------------
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
+logging.basicConfig(level=logging.INFO)
 
 api_key = os.getenv("GENAI_API_KEY")
 if not api_key:
@@ -22,8 +28,13 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
-MODEL_NAME = "models/gemini-2.5-flash"
+MODEL_NAME = "models/gemini-2.5-flash-lite"
 
+MAX_FILE_SIZE = 5 * 1024 * 1024
+MAX_TEXT_LENGTH = 2500   # slightly reduced to save quota
+
+
+# ------------------ utils ------------------
 
 def clean_text(text: str) -> str:
     if not text:
@@ -38,15 +49,17 @@ def is_confused(text: str) -> bool:
     return any(k in text for k in ["huh", "what", "explain", "didn't get", "confused"])
 
 
-def is_medical_query(text: str) -> bool:
-    text = (text or "").lower()
-    return any(k in text for k in [
-        "pain", "fever", "headache", "symptom", "disease",
-        "infection", "medicine", "tablet", "doctor",
-        "diagnosis", "treatment", "cough", "cold",
-        "blood", "heart", "lung", "stomach", "injury", "health"
-    ])
+def safe_base64_decode(data: str):
+    try:
+        _, encoded = data.split(",", 1)
+        if len(encoded) > MAX_FILE_SIZE * 1.37:
+            return None
+        return base64.b64decode(encoded)
+    except Exception:
+        return None
 
+
+# ------------------ file handling ------------------
 
 def extract_files(files):
     text_parts = []
@@ -60,33 +73,46 @@ def extract_files(files):
         if not data:
             continue
 
-        if "image" in file_type:
-            try:
-                image_bytes = base64.b64decode(data.split(",")[1])
-                image = Image.open(io.BytesIO(image_bytes))
+        decoded = safe_base64_decode(data)
+        if not decoded:
+            continue
+
+        try:
+            # -------- image --------
+            if "image" in file_type:
+                image = Image.open(io.BytesIO(decoded)).convert("RGB")
+                image.load()
+                image.thumbnail((1024, 1024))
+
                 image_parts.append(image)
-            except:
-                pass
 
-        elif "pdf" in file_type:
-            try:
-                pdf_bytes = base64.b64decode(data.split(",")[1])
-                reader = PdfReader(io.BytesIO(pdf_bytes))
-
+            # -------- pdf --------
+            elif "pdf" in file_type:
+                reader = PdfReader(io.BytesIO(decoded))
                 text = ""
+
                 for page in reader.pages:
-                    text += page.extract_text() or ""
+                    raw = page.extract_text() or ""
+                    text += re.sub(r"\s+", " ", raw) + "\n"
 
-                text_parts.append(f"[PDF: {name}]\n{text}")
+                text = text[:MAX_TEXT_LENGTH]
 
-            except:
-                pass
+                text_parts.append(f"""
+[PDF: {name}]
 
-        else:
-            text_parts.append(f"[File: {name}]\n{data}")
+{text}
+
+task:
+extract structured medical insights.
+""")
+
+        except Exception as e:
+            logging.error(f"file error: {name} -> {e}")
 
     return "\n\n".join(text_parts), image_parts
 
+
+# ------------------ routes ------------------
 
 @app.route("/")
 def home():
@@ -105,73 +131,94 @@ def chat():
 
         user_message = (data.get("message") or "").strip()
         files = data.get("files") or []
+        history = data.get("history") or []
 
         if not user_message and not files:
             return jsonify({
                 "status": "success",
-                "reply": "Ask a medical question or upload a report."
-            })
-
-        if not is_medical_query(user_message):
-            return jsonify({
-                "status": "success",
-                "reply": "🧠 I’m a medical assistant. Ask only health or medical-related questions."
+                "reply": "send a message or upload a file."
             })
 
         file_text, images = extract_files(files)
 
-        confused = is_confused(user_message)
+        # reduce API load (important for quota)
+        history = history[-3:]
 
         tone = """
-You are Mediora AI, a medical assistant.
-Only answer medical, health, anatomy, symptoms, and treatment-related queries.
-Never go outside medical domain.
+you are mediora ai, a clinical assistant.
+
+rules:
+- be precise
+- no repetition
+- avoid long explanations
+- extract useful medical info first
 """
 
-        if confused:
-            tone = """
-User is confused.
-Explain in very simple medical terms step-by-step.
-Be like a tutor. No complex language.
-"""
+        if is_confused(user_message):
+            tone += "\nuser is confused: simplify heavily."
+
+        history_text = ""
+        for msg in history:
+            history_text += f"{msg.get('role')}: {msg.get('text')}\n"
 
         prompt = f"""
 {tone}
 
-User message:
+history:
+{history_text}
+
+user:
 {user_message}
 
-File content:
-{file_text if file_text else "None"}
-
-IMPORTANT:
-- If medical report is present, interpret it simply
-- Do not give prescriptions
-- Suggest consulting a doctor for serious issues
+file:
+{file_text if file_text else "none"}
 """
 
-        contents = [prompt]
-        contents.extend(images)
+        # ⚡ reduce image usage (quota protection)
+        images = images[:1]
 
-        response = client.models.generate_content(
-            model=MODEL_NAME,
-            contents=contents,
-            config={"max_output_tokens": 800}
-        )
+        contents = [prompt] + images
 
-        return jsonify({
-            "status": "success",
-            "reply": clean_text(getattr(response, "text", ""))
-        })
+        # ------------------ API CALL ------------------
 
-    except Exception as e:
-        print("ERROR:", str(e))
+        try:
+            response = client.models.generate_content(
+                model=MODEL_NAME,
+                contents=contents,
+                config={"max_output_tokens": 600}  # reduced to save quota
+            )
+
+            reply = getattr(response, "text", None)
+
+            if not reply:
+                return jsonify({
+                    "status": "error",
+                    "reply": "empty model response"
+                })
+
+            return jsonify({
+                "status": "success",
+                "reply": clean_text(reply)
+            })
+
+        except ClientError as e:
+            logging.error(f"quota/api error: {e}")
+
+            return jsonify({
+                "status": "error",
+                "reply": "you hit the Gemini quota limit. wait or upgrade plan."
+            })
+
+    except Exception:
+        logging.error(traceback.format_exc())
 
         return jsonify({
             "status": "error",
-            "reply": "server error"
-        }), 500
+            "reply": "server crashed internally."
+        })
 
+
+# ------------------ run ------------------
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
