@@ -11,3 +11,5 @@ __pycache__/
 .idea/
 
 .DS_Store
+
+static/assets/
