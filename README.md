@@ -1,6 +1,8 @@
-# Mediora AI
+# 🩺 Mediora AI – Medical Chat Interface
 
-A GenAI-powered medical report assistant with a chat-based interface, designed to simulate interactive patient-report analysis.
+A GenAI-powered medical report assistant with a chat-based interface designed for interactive patient-report analysis.
+
+---
 
 ## Features
 - Interactive chat UI for medical queries
@@ -8,9 +10,8 @@ A GenAI-powered medical report assistant with a chat-based interface, designed t
 - Simulated report-based responses
 - Basic authentication (localStorage)
 
+---
+
 ## Tech Stack
 - HTML, CSS, JavaScript (Frontend)
 - Python, Flask (Backend)
-
-## Note
-Backend implementation is included for learning purposes and is currently being refined.
