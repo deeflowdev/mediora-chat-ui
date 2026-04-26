@@ -7,30 +7,30 @@
 @import url("./layout.css");
 
 :root {
-  --bg-main: #000;
-  --bg-sidebar: #000;
-  --bg-input: #111;
+--bg-main: #000;
+--bg-sidebar: #000;
+--bg-input: #111;
 
-  --text-main: #fff;
-  --text-muted: #8e8e8e;
+--text-main: #fff;
+--text-muted: #8e8e8e;
 
-  --accent: #a855f7;
-  --danger: #ff4d4d;
+--accent: #a855f7;
+--danger: #ff4d4d;
 
-  --user-bubble: #1a1a1a;
-  --border: rgba(255, 255, 255, 0.1);
+--user-bubble: #1a1a1a;
+--border: rgba(255, 255, 255, 0.1);
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
+--radius-sm: 8px;
+--radius-md: 12px;
+--radius-lg: 20px;
 
-  --sidebar-width: 260px;
+--sidebar-width: 260px;
 
-  --fs-xs: 0.75rem;   
-  --fs-sm: 0.875rem;  
-  --fs-base: 1rem;    
-  --fs-lg: 1.25rem;   
-  --fs-xl: 2rem;      
+--fs-xs: 0.75rem;   
+--fs-sm: 0.875rem;  
+--fs-base: 1rem;    
+--fs-lg: 1.25rem;   
+--fs-xl: 2rem;      
 }
 
 * {
@@ -83,6 +83,11 @@ h1, h2, h3 {
         --sidebar-width: 280px;
     }
 
+    #chat-container {
+        overflow-y: auto;
+        padding-bottom: 140px;
+    }
+
     .mobile-menu-btn {
         display: block !important;
         font-size: 1.5rem;
@@ -123,10 +128,18 @@ h1, h2, h3 {
         z-index: 100;
     }
 
-    .input-wrapper { padding: 1rem; }
+    .input-wrapper { 
+        padding: 1rem; 
+        position: sticky;
+        bottom: 0;
+        background: var(--bg-main);
+        z-index: 200;
+    }
     #messages-wrapper { padding: 1rem; max-width: 100%; }
 
-    .message { max-width: 95%; }
+    .message { 
+        max-width: 95%; 
+    }
     
     .attachment-wrapper.is-img, 
     .attachment-wrapper.sent-mode {
@@ -142,7 +155,8 @@ h1, h2, h3 {
         width: 100%;            
         max-width: 100%;
         margin-top: 12px;
-        overflow: visible;      
+        overflow: visible; 
+        padding-bottom: 20px;     
     }
     
 
@@ -160,7 +174,14 @@ h1, h2, h3 {
       box-sizing: border-box;
   }
 
-    .home-content h1 { font-size: 1.6rem; padding: 0 1rem; }
+    .home-content h1 { 
+        font-size: 1.6rem; padding: 0 1rem; 
+    }
+
+    main {
+        height: 100%;
+        overflow: hidden;
+    }
 
 #preview-strip {
     display: flex;
