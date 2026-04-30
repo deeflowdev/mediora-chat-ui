@@ -4,12 +4,13 @@ import io
 import base64
 import logging
 import traceback
+import time
 
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 from google import genai
-from google.genai.errors import ClientError
+from google.genai.errors import ClientError, ServerError
 
 from PIL import Image
 from PyPDF2 import PdfReader
@@ -176,27 +177,39 @@ file:
 
         contents = [prompt] + images
 
-        try:
-            response = client.models.generate_content(
-                model=MODEL_NAME,
-                contents=contents,
-                config={"max_output_tokens": 600}  # reduced to save quota
-            )
+        for attempt in range(2):
+            try:
+                response = client.models.generate_content(
+                    model=MODEL_NAME,
+                    contents=contents,
+                    config={"max_output_tokens": 600}
+                )
+                break
 
-            reply = getattr(response, "text", None)
+            except ServerError as e:
+                logging.warning(f"retrying due to server load: {e}")
+                time.sleep(2)
 
-            if not reply:
+        else:
+            return jsonify({
+                "status": "error",
+                "reply": "AI is busy. Try again shortly."
+            })
+
+        reply = getattr(response, "text", None)
+
+        if not reply:
                 return jsonify({
                     "status": "error",
                     "reply": "empty model response"
                 })
 
-            return jsonify({
+        return jsonify({
                 "status": "success",
                 "reply": clean_text(reply)
             })
-
-        except ClientError as e:
+        
+    except ClientError as e:
             logging.error(f"quota/api error: {e}")
 
             return jsonify({
