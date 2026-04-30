@@ -122,7 +122,7 @@ const auth = {
     if (this.authCard) this.authCard.style.display = "none";
     if (this.successScreen) this.successScreen.style.display = "block";
     setTimeout(() => {
-      window.location.href = "/";
+      window.location.href = "mediora.html";
     }, 1500);
   },
 };

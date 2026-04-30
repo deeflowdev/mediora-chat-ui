@@ -16,7 +16,7 @@ from PyPDF2 import PdfReader
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 logging.basicConfig(level=logging.INFO)
 
@@ -70,26 +70,33 @@ def extract_files(files):
             continue
 
         try:
-            #image
+            # IMAGE
             if "image" in file_type:
                 image = Image.open(io.BytesIO(decoded)).convert("RGB")
                 image.load()
                 image.thumbnail((1024, 1024))
-
                 image_parts.append(image)
 
-            # pdf 
+            # PDF
             elif "pdf" in file_type:
-                reader = PdfReader(io.BytesIO(decoded))
-                text = ""
+                try:
+                    reader = PdfReader(io.BytesIO(decoded))
+                    text = ""
 
-                for page in reader.pages:
-                    raw = page.extract_text() or ""
-                    text += re.sub(r"\s+", " ", raw) + "\n"
+                    for page in reader.pages:
+                        try:
+                            raw = page.extract_text()
+                            if raw:
+                                text += re.sub(r"\s+", " ", raw) + "\n"
+                        except Exception as e:
+                            logging.warning(f"page read failed in {name}: {e}")
 
-                text = text[:MAX_TEXT_LENGTH]
+                    if not text.strip():
+                        text = "No readable text found in PDF (possibly scanned document)."
 
-                text_parts.append(f"""
+                    text = text[:MAX_TEXT_LENGTH]
+
+                    text_parts.append(f"""
 [PDF: {name}]
 
 {text}
@@ -97,6 +104,10 @@ def extract_files(files):
 task:
 extract structured medical insights.
 """)
+
+                except Exception as e:
+                    logging.error(f"PDF processing failed: {name} -> {e}")
+                    text_parts.append(f"[PDF: {name}] could not be processed.")
 
         except Exception as e:
             logging.error(f"file error: {name} -> {e}")
@@ -106,12 +117,12 @@ extract structured medical insights.
 
 @app.route("/")
 def home():
-    return render_template("mediora.html")
+    return "Mediora backend is running"
 
 
 @app.route("/login")
 def login():
-    return render_template("login.html")
+    return "Login handled on frontend"
 
 
 @app.route("/api/chat", methods=["POST"])
@@ -202,4 +213,5 @@ file:
         })
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5501)
+    port = int(os.environ.get("PORT", 5501))
+    app.run(host="0.0.0.0", port=port)

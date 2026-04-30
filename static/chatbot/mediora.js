@@ -1,3 +1,4 @@
+const API_MODE = "live";
 const app = {
   chats: [],
   currId: null,
@@ -7,7 +8,7 @@ const app = {
 
   init() {
     if (localStorage.getItem("isLoggedIn") !== "true") {
-      window.location.href = "./login.html";
+      window.location.href = "login.html";
       return;
     }
 
@@ -78,72 +79,115 @@ const app = {
     input.focus();
   },
 
-send() {
-  const input = document.getElementById("user-input");
-  const text = input.value.trim();
-  if (!text && this.tempFiles.length === 0) return;
-
-  if (!this.currId) {
-    const id = Date.now();
-    this.chats.unshift({ id, title: "New Consult", msgs: [] });
-    this.currId = id;
-    document.getElementById("chat-container").classList.remove("is-home");
-    document.getElementById("chat-container").classList.add("is-chat");
-    document.getElementById("home-screen").style.display = "none";
-  }
-
-  const chat = this.chats.find((c) => c.id === this.currId);
-
-  if (chat && chat.msgs.length === 0 && text.length > 5) {
-    chat.title = this.generateTitle(text);
-  }
-
-  // push user message
-  chat.msgs.push({
-    role: "user",
-    text: text || "Sent clinical attachments",
-    files: [...this.tempFiles],
-    time: new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-  });
-
-  // clear input + UI
-  this.tempFiles = [];
-  input.value = "";
-  input.style.height = "auto";
-  this.renderPreviews();
-  this.render();
-
-  // loading message
-  const loadingMsg = {
-    role: "bot",
-    text: "Reviewing your submission. Analysing clinical patterns...",
-    time: new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-  };
-
-  chat.msgs.push(loadingMsg);
-  this.render();
-
-  setTimeout(() => {
-    chat.msgs.pop();
-
+  send() {
+    const input = document.getElementById("user-input");
+    const text = input.value.trim();
+    if (!text && this.tempFiles.length === 0) return;
+  
+    if (!this.currId) {
+      const id = Date.now();
+      this.chats.unshift({ id, title: "New Consult", msgs: [] });
+      this.currId = id;
+      document.getElementById("chat-container").classList.remove("is-home");
+      document.getElementById("chat-container").classList.add("is-chat");
+      document.getElementById("home-screen").style.display = "none";
+    }
+  
+    const chat = this.chats.find((c) => c.id === this.currId);
+  
+    if (chat && chat.msgs.length === 0 && text.length > 5) {
+      chat.title = this.generateTitle(text);
+    }
+  
+    // push user message
     chat.msgs.push({
-      role: "bot",
-      text: "This is a demo response. Backend integration is in progress.",
+      role: "user",
+      text: text || "Sent clinical attachments",
+      files: [...this.tempFiles],
       time: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       }),
     });
-
+  
+    // clear input + UI
+    this.tempFiles = [];
+    input.value = "";
+    input.style.height = "auto";
+    this.renderPreviews();
     this.render();
-  }, 800);
-},
+  
+    // loading message
+    const loadingMsg = {
+      role: "bot",
+      text: "Reviewing your submission. Analysing clinical patterns...",
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    };
+  
+    chat.msgs.push(loadingMsg);
+    this.render();
+  
+    if (API_MODE === "demo") {
+      setTimeout(() => {
+        chat.msgs.pop();
+  
+        chat.msgs.push({
+          role: "bot",
+          text: "This is a demo response. Backend integration is in progress.",
+          time: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        });
+  
+        this.render();
+      }, 800);
+    } else {
+      fetch("http://127.0.0.1:5501/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: text,
+          files: chat.msgs[chat.msgs.length - 2]?.files || [],
+          history: chat.msgs.slice(-5),
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          chat.msgs.pop();
+
+          chat.msgs.push({
+            role: "bot",
+            text: data.reply || "No response generated.",
+            time: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          });
+
+          this.render();
+        })
+        .catch(() => {
+          chat.msgs.pop();
+
+          chat.msgs.push({
+            role: "bot",
+            text: "Server error. Try again.",
+            time: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          });
+
+          this.render();
+        });
+    }
+  },
 
   renderSidebar() {
     const list = document.getElementById("chat-list");
@@ -255,7 +299,7 @@ send() {
   confirmLogout() {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("user_creds");
-    window.location.href = "./login.html";
+    window.location.href = "login.html";
   },
 
   openDeleteModal(e, id) {
