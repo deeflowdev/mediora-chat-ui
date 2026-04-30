@@ -6,6 +6,12 @@ const app = {
   pendingDeleteId: null,
   userKey: "",
 
+  saveChats() {
+    if (this.userKey) {
+      localStorage.setItem(this.userKey, JSON.stringify(this.chats));
+    }
+  },
+
   init() {
     if (localStorage.getItem("isLoggedIn") !== "true") {
       window.location.href = "login.html";
@@ -88,6 +94,7 @@ const app = {
       const id = Date.now();
       this.chats.unshift({ id, title: "New Consult", msgs: [] });
       this.currId = id;
+      this.saveChats();
       document.getElementById("chat-container").classList.remove("is-home");
       document.getElementById("chat-container").classList.add("is-chat");
       document.getElementById("home-screen").style.display = "none";
@@ -97,6 +104,7 @@ const app = {
   
     if (chat && chat.msgs.length === 0 && text.length > 5) {
       chat.title = this.generateTitle(text);
+      this.saveChats();
     }
   
     // push user message
@@ -109,6 +117,7 @@ const app = {
         minute: "2-digit",
       }),
     });
+    this.saveChats();
   
     // clear input + UI
     this.tempFiles = [];
@@ -143,6 +152,7 @@ const app = {
           }),
         });
   
+        this.saveChats();
         this.render();
       }, 800);
     } else {
@@ -170,6 +180,7 @@ const app = {
             }),
           });
 
+          this.saveChats();
           this.render();
         })
         .catch(() => {
@@ -184,6 +195,7 @@ const app = {
             }),
           });
 
+          this.saveChats();
           this.render();
         });
     }
