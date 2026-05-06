@@ -285,19 +285,27 @@ const app = {
   },
 
   generateTitle(text) {
-    let cleanText = text.replace(/[^\w\s]/gi, "").trim();
-    if (cleanText.length < 5) return "New Consultation";
-    const stopWords = ["a", "an", "the", "is", "can", "please", "help", "with"];
+    let cleanText = text
+      .replace(/[^\w\s]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  
+    if (cleanText.length < 3) return "New Consultation";
+  
+    const stopWords = [
+      "a", "an", "the", "is", "can", "please", "help",
+      "with", "i", "me", "my", "what", "how"
+    ];
+  
     let words = cleanText
-      .split(/\s+/)
-      .filter((w) => !stopWords.includes(w.toLowerCase()));
-    let title = words
-      .slice(0, 4)
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
-    return title.length < 3
-      ? cleanText.split(/\s+/).slice(0, 3).join(" ") + "..."
-      : title;
+      .split(" ")
+      .filter(word => !stopWords.includes(word.toLowerCase()));
+  
+    if (!words.length) words = cleanText.split(" ");
+  
+    let title = words.slice(0, 5).join(" ");
+  
+    return title.charAt(0).toUpperCase() + title.slice(1).toLowerCase();
   },
 
   toggleMenu(e, id) {
