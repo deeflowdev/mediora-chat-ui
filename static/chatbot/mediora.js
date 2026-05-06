@@ -1,4 +1,10 @@
 const API_MODE = "live";
+
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://127.0.0.1:5501"
+    : "https://mediora-api.onrender.com";
+  
 const app = {
   chats: [],
   currId: null,
@@ -156,7 +162,7 @@ const app = {
         this.render();
       }, 800);
     } else {
-      fetch("http://127.0.0.1:5501/api/chat", {
+      fetch(`${API_BASE}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
