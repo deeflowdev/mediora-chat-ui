@@ -2,16 +2,58 @@
 
 A GenAI-powered medical report assistant with a chat-based interface designed for interactive patient-report analysis.
 
+## 🌐 Live Demo
+Frontend (Vercel): https://mediora-chat-ui.vercel.app/  
+Backend API (Render): https://mediora-api-jas7.onrender.com/
+
 ---
 
 ## Features
 - Interactive chat UI for medical queries
 - File upload support (images, PDFs)
-- Simulated report-based responses
-- Basic authentication (localStorage)
+- AI-generated responses using Gemini API
+- Chat history stored with localStorage
+- Basic authentication flow
+- Responsive modern interface
 
 ---
 
 ## Tech Stack
-- HTML, CSS, JavaScript (Frontend)
-- Python, Flask (Backend)
+### Frontend
+- HTML
+- CSS
+- JavaScript
+
+### Backend
+- Python
+- Flask
+- Flask-CORS
+
+### AI Integration
+- Google Gemini API
+
+### Deployment
+- Vercel (Frontend)
+- Render (Backend)
+
+---
+
+## How It Works
+1. User logs in through the frontend interface  
+2. Sends text queries or uploads files  
+3. Frontend sends request to Flask API  
+4. Backend processes reports/images  
+5. Gemini generates structured responses  
+6. Response appears in chat UI
+
+---
+
+## Local Setup
+
+### Frontend
+Open `index.html` or run with Live Server.
+
+### Backend
+```bash id="n3n4tv"
+pip install -r requirements.txt
+python app.py
