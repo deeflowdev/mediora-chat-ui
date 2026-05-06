@@ -19,6 +19,7 @@ Backend API (Render): https://mediora-api-jas7.onrender.com/
 ---
 
 ## Tech Stack
+
 ### Frontend
 - HTML
 - CSS
@@ -41,19 +42,28 @@ Backend API (Render): https://mediora-api-jas7.onrender.com/
 ## How It Works
 1. User logs in through the frontend interface  
 2. Sends text queries or uploads files  
-3. Frontend sends request to Flask API  
-4. Backend processes reports/images  
+3. Frontend sends requests to Flask API  
+4. Backend processes uploaded reports/images  
 5. Gemini generates structured responses  
-6. Response appears in chat UI
+6. Responses appear in the chat UI
 
 ---
 
 ## Local Setup
 
 ### Frontend
-Open `index.html` or run with Live Server.
+Open `login.html` in a browser or run with Live Server.  
+After login, users are redirected to `mediora.html`.
 
 ### Backend
-```bash id="n3n4tv"
+```bash
 pip install -r requirements.txt
 python app.py
+```
+
+### Environment Variables
+
+Create a `.env` file:
+
+```env
+GENAI_API_KEY=your_api_key_here
