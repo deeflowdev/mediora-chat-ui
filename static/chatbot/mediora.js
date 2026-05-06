@@ -3,7 +3,7 @@ const API_MODE = "live";
 const API_BASE =
   window.location.hostname === "localhost"
     ? "http://127.0.0.1:5501"
-    : "https://mediora-api.onrender.com";
+    : "https://mediora-api-jas7.onrender.com";
   
 const app = {
   chats: [],
